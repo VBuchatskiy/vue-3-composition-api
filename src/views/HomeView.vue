@@ -1,19 +1,23 @@
-<template>
-  <suspense>
-    <section class="home">
-      <todo-list> </todo-list>
-    </section>
-  </suspense>
-</template>
+<script setup lang="ts">
+import { useTodoStore } from "@/store/todo";
+import { onMounted } from "vue";
+import { TodoList } from "@/components/todo";
 
-<script lang="ts">
-import { defineComponent } from "vue";
-import TodoList from "@/components/TodoList.vue";
+const store = useTodoStore();
 
-export default defineComponent({
-  name: "HomeView",
-  components: {
-    TodoList,
-  },
+onMounted(async () => {
+  await store.getTodoCollection();
 });
 </script>
+
+<template>
+  <suspense>
+    <template #default>
+      <todo-list
+        v-bind="{
+          items: store.state.collection,
+        }"
+      ></todo-list>
+    </template>
+  </suspense>
+</template>
