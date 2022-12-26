@@ -34,7 +34,7 @@ const onClose = (form: FormInstance | undefined): void => {
   emit("update:modelValue", false);
 };
 
-const $todo = useTodoStore();
+const todoStore = useTodoStore();
 const form = ref<FormInstance>();
 const item = reactive<ITodo>({
   id: "",
@@ -50,7 +50,7 @@ const onInput = (form: FormInstance | undefined) => {
 };
 
 const onSubmit = async () => {
-  await $todo.createTodo(item);
+  await todoStore.createTodo(item);
 };
 </script>
 

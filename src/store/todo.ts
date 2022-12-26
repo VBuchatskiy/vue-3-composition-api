@@ -19,7 +19,7 @@ export interface IPagination {
 export interface ITodoState {
   collection: Map<string, ITodo>;
   pagination: IPagination;
-  item: Set<ITodo>;
+  item: ITodo;
   loading: boolean;
 }
 
@@ -27,7 +27,7 @@ export const useTodoStore = defineStore("todo", () => {
   const notification = useNotificationState();
 
   const state: ITodoState = reactive({
-    item: new Set(),
+    item: {} as ITodo,
     collection: new Map(),
     pagination: {
       page: 1,
@@ -64,7 +64,7 @@ export const useTodoStore = defineStore("todo", () => {
     try {
       const { data } = await axios.post("todo", todo);
 
-      state.item.add(data);
+      Object.assign(state.item, data);
     } catch (error) {
       if (error instanceof AxiosError) {
         notification.state.notifications.set("0", error);
@@ -74,5 +74,19 @@ export const useTodoStore = defineStore("todo", () => {
     }
   };
 
-  return { state, getTodoCollection, createTodo };
+  const updateTodo = async (todo: ITodo) => {
+    state.loading = !state.loading;
+
+    try {
+      await axios.patch(`todo/${todo.id}`, todo);
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        notification.state.notifications.set("0", error);
+      }
+    } finally {
+      state.loading = !state.loading;
+    }
+  };
+
+  return { state, getTodoCollection, createTodo, updateTodo };
 });
